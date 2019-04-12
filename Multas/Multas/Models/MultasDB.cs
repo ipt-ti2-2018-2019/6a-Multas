@@ -12,10 +12,11 @@ namespace Multas.Models {
 
 
       // definir as tabelas
-      public DbSet<Condutores> Condutores { get; set; }
-      public DbSet<Viaturas> Carros { get; set; }
-      public DbSet<Agentes> Agentes { get; set; }
-      public DbSet<Multas> Multas { get; set; }
+      public virtual DbSet<Multas> Multas { get; set; } // tabela Multas
+      public virtual DbSet<Condutores> Condutores { get; set; } // tabela Condutores
+      public virtual DbSet<Agentes> Agentes { get; set; } // tabela Agentes
+      public virtual DbSet<Viaturas> Viaturas { get; set; } // tabela Viaturas
+
 
 
 
