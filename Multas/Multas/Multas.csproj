@@ -105,6 +105,16 @@
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Imagens\AndreSilveira.jpg" />
+    <Content Include="Imagens\AntonioRocha.jpg" />
+    <Content Include="Imagens\AugustoCarvalho.jpg" />
+    <Content Include="Imagens\BeatrizPinto.jpg" />
+    <Content Include="Imagens\ClaudiaPinto.jpg" />
+    <Content Include="Imagens\JoseAlves.jpg" />
+    <Content Include="Imagens\LurdesVieira.jpg" />
+    <Content Include="Imagens\PauloVieira.jpg" />
+    <Content Include="Imagens\RuiVieira.jpg" />
+    <Content Include="Imagens\TaniaVieira.jpg" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -151,7 +161,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Imagens\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
