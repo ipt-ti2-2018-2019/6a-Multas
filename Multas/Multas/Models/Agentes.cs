@@ -27,11 +27,11 @@ namespace Multas.Models {
 
       [Required(ErrorMessage = "a Esquadra é de preenchimento obrigatório.")]
       [StringLength(30)]
-      [RegularExpression("Torres Novas|Tomar|Entroncamento",
-                         ErrorMessage = " só é aceite Torres Novas ou Tomar ou Entroncamento")]
+   //   [RegularExpression("Torres Novas|Tomar|Entroncamento",
+   //                      ErrorMessage = " só é aceite Torres Novas ou Tomar ou Entroncamento")]
       public string Esquadra { get; set; }
 
-      [StringLength (30)]
+      [StringLength (40)]
       public string Fotografia { get; set; }
 
       // lista das multas associadas ao Agente

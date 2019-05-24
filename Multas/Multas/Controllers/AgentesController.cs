@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -14,7 +15,15 @@ namespace Multas.Controllers {
 
       // GET: Agentes
       public ActionResult Index() {
-         return View(db.Agentes.ToList());
+
+         // LINQ
+         // SELECT * FROM Agentes ORDER BY ID DESC
+         var listaDeAgentes = db.Agentes
+                                .OrderByDescending(a => a.ID)
+                                .ToList();
+
+
+         return View(listaDeAgentes);
       }
 
       // GET: Agentes/Details/5
@@ -40,23 +49,69 @@ namespace Multas.Controllers {
       [HttpPost]
       [ValidateAntiForgeryToken]
       public ActionResult Create([Bind(Include = "Nome,Esquadra")] Agentes agente,
-                                 HttpPostedFileBase fotografia
-      ) {
+                                 HttpPostedFileBase fotografia) {
+
+         // vars auxiliares
+         string caminho = "";
+         bool imagemValida = false;
+
          /// foi fornecido um ficheiro?
-         /// é uma imagem (fotografia)?
-         /// se é fotografia, 
-         ///     guardar a imagem e 
-         ///     associar ao agente
-         /// se não é imagem, ou se não existir ficheiro
-         ///     atribuir ao agente uma 'imagem por defeito'
+         if(fotografia == null) {
+            // a foto não existe
+            // vou atribuir uma fotografia por defeito
+            agente.Fotografia = "nouser.jpg";
+         }
+         else {
+            // existe ficheiro
+            /// é uma imagem (fotografia)?
+            // aceitamos JPEG e PNG
+            if(fotografia.ContentType == "image/jpeg" ||
+               fotografia.ContentType == "image/png") {
+               // estamos perante uma Foto válida
+               /// se é fotografia, 
+               ///     guardar a imagem e 
+               ///       - definir um nome
+               Guid g;
+               g = Guid.NewGuid();
+               string extensaoDoFicheiro = Path.
+                                           GetExtension(fotografia.FileName).
+                                           ToLower();
+               string nomeFicheiro = g.ToString() + extensaoDoFicheiro;
 
+               ///       - definir um local onde a guardar
+               caminho = Path.Combine(Server.MapPath("~/Imagens/"), nomeFicheiro);
 
-         if(ModelState.IsValid) {
-            db.Agentes.Add(agente);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+               ///     associar ao agente
+               agente.Fotografia = nomeFicheiro;
+
+               // marca o ficheiro como válido
+               imagemValida = true;
+            }
+            else {
+               /// se não é um ficheiro do tipo imagem (JPEG ou PNG), 
+               ///     atribuir ao agente uma 'imagem por defeito'
+               agente.Fotografia = "nouser.jpg";
+            }
          }
 
+         // avalia se os dados fornecidos estão de acordo com o modelo
+         if(ModelState.IsValid) {
+            // adicionar os dados do novo Agente ao Modelo
+            db.Agentes.Add(agente);
+            try {
+               // guardar os dados na BD
+               db.SaveChanges();
+               // guardar a imagem no disco rígido do servidor
+               if(imagemValida) fotografia.SaveAs(caminho);
+               // redirecionar o utilizador para a página de INDEX
+               return RedirectToAction("Index");
+            }
+            catch(Exception) {
+               ModelState.AddModelError("", "Ocorreu um erro desconhecido. " +
+                                            "Pedimos deculpa pela ocorrência.");
+            }
+         }
+         // se cheguei aqui é pq alguma coisa correu mal...
          return View(agente);
       }
 
