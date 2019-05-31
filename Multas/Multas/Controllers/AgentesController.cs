@@ -31,11 +31,15 @@ namespace Multas.Controllers {
          if(id == null) {
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
          }
-         Agentes agentes = db.Agentes.Find(id);
-         if(agentes == null) {
+
+         Agentes agente = db.Agentes.Find(id);
+
+         if(agente == null) {
             return HttpNotFound();
          }
-         return View(agentes);
+
+         // envia os dados do AGENTE para a View
+         return View(agente);
       }
 
       // GET: Agentes/Create

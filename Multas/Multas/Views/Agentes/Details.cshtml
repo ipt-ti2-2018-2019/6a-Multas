@@ -1,42 +1,102 @@
 ﻿@model Multas.Models.Agentes
 
 @{
-    ViewBag.Title = "Details";
+   ViewBag.Title = "Detalhes";
 }
 
-<h2>Details</h2>
+<h2>Detalhes do agente <i>@Model.Nome</i></h2>
 
 <div>
-    <h4>Agentes</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Nome)
-        </dt>
+   <hr />
+   <dl class="dl-horizontal">
+      <dt>
+         @Html.DisplayNameFor(model => model.Nome)
+      </dt>
+      <dd>
+         @Html.DisplayFor(model => model.Nome)
+      </dd>
 
-        <dd>
-            @Html.DisplayFor(model => model.Nome)
-        </dd>
+      <dt>
+         @Html.DisplayNameFor(model => model.Esquadra)
+      </dt>
+      <dd>
+         @Html.DisplayFor(model => model.Esquadra)
+      </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Esquadra)
-        </dt>
+      <dt>
+         @Html.DisplayNameFor(model => model.Fotografia)
+      </dt>
+      <dd>
+         <img src="~/Imagens/@Html.DisplayFor(model => model.Fotografia)"
+              alt="Fotografia do agente @Html.DisplayFor(model => model.Nome)"
+              title="@Html.DisplayFor(model => model.Nome)"
+              width="150" />
 
-        <dd>
-            @Html.DisplayFor(model => model.Esquadra)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Fotografia)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Fotografia)
-        </dd>
-
-    </dl>
+         <img src="~/Imagens/@Model.Fotografia"
+              alt="Fotografia do agente @Model.Nome"
+              title="@Model.Nome"
+              width="150" />
+      </dd>
+   </dl>
 </div>
+
+@* listagem das multas do Agente *@
+<div>
+   <table class="table">
+      <tr>
+         @* representa uma primeira linha na tabela, que é o seu cabeçalho *@
+         <th>
+            @* listar o Nome do atributo DataDaMulta *@
+            @Html.DisplayNameFor(m => m.ListaDeMultas.FirstOrDefault().DataDaMulta)
+         </th>
+         <th>
+            @Html.DisplayNameFor(m => m.ListaDeMultas.FirstOrDefault().LocalDaMulta)
+         </th>
+         <th>
+            @Html.DisplayNameFor(m => m.ListaDeMultas.FirstOrDefault().ValorMulta)
+         </th>
+         <th>
+            @Html.DisplayNameFor(m => m.ListaDeMultas.FirstOrDefault().Condutor.Nome)
+         </th>
+         <th>
+            @Html.DisplayNameFor(m => m.ListaDeMultas.FirstOrDefault().Viatura.Matricula)
+         </th>
+      </tr>
+      @* representar as diversas multas do agente *@
+      @foreach(var multa in Model.ListaDeMultas) {
+         <tr>
+            <td>
+               @Html.ActionLink(multa.DataDaMulta.ToShortDateString(),
+                                "Details",
+                                "Multas",
+                                new { id = multa.ID },
+                                null)
+               @*  @multa.DataDaMulta  *@
+            </td>
+            <td>@multa.LocalDaMulta</td>
+            <td>@multa.ValorMulta</td>
+            <td>
+               @Html.ActionLink(multa.Condutor.Nome,
+                              "Details",
+                              "Condutores",
+                              new { id = multa.Condutor.ID },
+                              null)
+               @*  @multa.Condutor.Nome  *@
+            </td>
+            <td>
+               @Html.ActionLink(multa.Viatura.Matricula,
+                            "Details",
+                            "Viaturas",
+                            new { id = multa.Viatura.ID },
+                            null)
+               @*  @multa.Viatura.Matricula  *@
+            </td>
+         </tr>
+      }
+   </table>
+</div>
+
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
-    @Html.ActionLink("Back to List", "Index")
+   @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
+   @Html.ActionLink("Back to List", "Index")
 </p>
