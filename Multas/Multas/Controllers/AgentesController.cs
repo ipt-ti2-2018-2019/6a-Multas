@@ -10,18 +10,40 @@ using System.Web.Mvc;
 using Multas.Models;
 
 namespace Multas.Controllers {
+
+   [Authorize] // só pessoas autenticadas podem aceder ao seu conteúdo
    public class AgentesController : Controller {
       private MultasDB db = new MultasDB();
 
       // GET: Agentes
+      [Authorize(Roles = "RecursosHumanos,Agente")] // só as pessoas que forem
+      // do role 'Agente' OU do role 'RecursosHumanos' podem aceder
+
+      //[Authorize(Roles = "Agente")]           // só tem acesso as pessoas que forem 
+      //[Authorize(Roles = "RecursosHumanos")]  // de RecursosHumanos E Agente
       public ActionResult Index() {
 
          // LINQ
-         // SELECT * FROM Agentes ORDER BY ID DESC
+         // SELECT * FROM Agentes ORDER BY ID DESC   <--- só as pessoas dos recursos humanos
          var listaDeAgentes = db.Agentes
                                 .OrderByDescending(a => a.ID)
                                 .ToList();
 
+         // se for apenas agente
+         //SELECT * FROM Agente WHERE UserName = username da pessoa autenticada
+         if(!User.IsInRole("RecursosHumanos")) {
+            // vou restringir a listagem inicial apenas aos dados do Agente
+            //  listaDeAgentes = listaDeAgentes.Where(a => a.UserName == User.Identity.Name).ToList();
+
+            // redirecionar para página dos detalhes
+            int idAgente = db.Agentes
+                           .Where(a => a.UserName == User.Identity.Name)
+                           .FirstOrDefault()
+                           .ID;
+            return RedirectToAction("Details", new { id = idAgente });
+
+
+         }
 
          return View(listaDeAgentes);
       }
@@ -38,11 +60,24 @@ namespace Multas.Controllers {
             return HttpNotFound();
          }
 
-         // envia os dados do AGENTE para a View
-         return View(agente);
+         /// posso aceder aos dados dos agentes, quando:
+         ///   - for do role 'recursos humanos'
+         ///   - for do role ' gestor multas'
+         ///   - for o dono dos dados
+         if(User.IsInRole("RecursosHumanos") ||
+            User.IsInRole("GestorMultas") ||
+            agente.UserName == User.Identity.Name) {
+            // envia os dados do AGENTE para a View
+            return View(agente);
+         }
+         else{
+            // estou a tentar aceder a dados não autorizados
+            return RedirectToAction("Index");
+         }
       }
 
       // GET: Agentes/Create
+      [Authorize(Roles = "RecursosHumanos")]
       public ActionResult Create() {
          return View();
       }
@@ -52,6 +87,7 @@ namespace Multas.Controllers {
       // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
       [HttpPost]
       [ValidateAntiForgeryToken]
+      [Authorize(Roles = "RecursosHumanos")]
       public ActionResult Create([Bind(Include = "Nome,Esquadra")] Agentes agente,
                                  HttpPostedFileBase fotografia) {
 
@@ -120,6 +156,7 @@ namespace Multas.Controllers {
       }
 
       // GET: Agentes/Edit/5
+      [Authorize(Roles = "RecursosHumanos")]
       public ActionResult Edit(int? id) {
          if(id == null) {
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -136,6 +173,7 @@ namespace Multas.Controllers {
       // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
       [HttpPost]
       [ValidateAntiForgeryToken]
+      [Authorize(Roles = "RecursosHumanos")]
       public ActionResult Edit([Bind(Include = "ID,Nome,Esquadra,Fotografia")] Agentes agentes) {
          if(ModelState.IsValid) {
             db.Entry(agentes).State = EntityState.Modified;
@@ -146,6 +184,7 @@ namespace Multas.Controllers {
       }
 
       // GET: Agentes/Delete/5
+      [Authorize(Roles = "RecursosHumanos")]
       public ActionResult Delete(int? id) {
 
          /// o ID é nulo se:
@@ -184,6 +223,7 @@ namespace Multas.Controllers {
       // POST: Agentes/Delete/5
       [HttpPost, ActionName("Delete")]
       [ValidateAntiForgeryToken]
+      [Authorize(Roles = "RecursosHumanos")]
       public ActionResult DeleteConfirmed(int? id) {
 
          /// o ID é nulo se:

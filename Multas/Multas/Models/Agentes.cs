@@ -41,7 +41,10 @@ namespace Multas.Models {
       public virtual ICollection<Multas> ListaDeMultas { get; set; }
       // a palavra 'virtual' ativa o chamado Lazy Loading
 
-
+      //*************************************************************
+      // definir uma "chave forasteira" para a tabela da autenticação
+      //   [Required]
+      public string UserName { get; set; }
 
    }
 }
